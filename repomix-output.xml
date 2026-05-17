@@ -1,0 +1,3058 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+boxes
+boxes.c
+button
+button.c
+checkB
+checkB.c
+exam
+exam.c
+image
+image.c
+image.jpg
+logo.png
+logon_icon.png
+menubutton
+menubutton.c
+progressBar
+progressBar.c
+prompt
+prompt.c
+radio
+radio.c
+spinner
+spinner.c
+structures.c
+structures.h
+test
+test.c
+test2
+test2.c
+window
+window.c
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="boxes.c">
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "structures.h"
+
+window *win = NULL;
+box *main_vbox = NULL;
+box *name_hbox = NULL;
+box *email_hbox = NULL;
+box *button_hbox = NULL;
+
+label *name_label = NULL;
+entry *name_entry = NULL;
+label *email_label = NULL;
+entry *email_entry = NULL;
+button *submit_btn = NULL;
+button *clear_btn = NULL;
+label *result_label = NULL;
+
+void on_submit_clicked(GtkWidget *widget, gpointer data) {
+    char *name = get_entry_text(name_entry);
+    char *email = get_entry_text(email_entry);
+    char result[256];
+    
+    if (strlen(name) > 0 && strlen(email) > 0) {
+        snprintf(result, sizeof(result), "Hello %s! (%s)", name, email);
+        gtk_label_set_text(GTK_LABEL(result_label->label), result);
+    } else {
+        gtk_label_set_text(GTK_LABEL(result_label->label), "Please fill all fields");
+    }
+}
+
+void on_clear_clicked(GtkWidget *widget, gpointer data) {
+    set_entry_text(name_entry, "");
+    set_entry_text(email_entry, "");
+    gtk_label_set_text(GTK_LABEL(result_label->label), "Cleared!");
+}
+
+int main() {
+    ProgramStart();
+    
+    /* Create window */
+    win = create_window();
+    win->title = "VBox + HBox Layout Example";
+    win->width = 450;
+    win->height = 350;
+    update_window(win);
+    
+    /* Main vertical box (everything goes in here) */
+    main_vbox = create_vbox(15, FALSE);
+    main_vbox->margin_top = 20;
+    main_vbox->margin_bottom = 20;
+    main_vbox->margin_left = 20;
+    main_vbox->margin_right = 20;
+    update_box(main_vbox);
+    
+    /* === Row 1: Name (Label + Entry in HBox) === */
+    name_hbox = create_hbox(10, FALSE);
+    update_box(name_hbox);
+    
+    name_label = create_label();
+    name_label->text = "Name:";
+    name_label->width = 80;
+    name_label->style = "bold";
+    update_label(name_label);
+    
+    name_entry = create_entry();
+    name_entry->width = 250;
+    name_entry->placeholder_text = "Enter your name";
+    update_entry(name_entry);
+    
+    add_to_box(name_hbox, name_label->label);
+    add_to_box(name_hbox, name_entry->entry);
+    
+    /* === Row 2: Email (Label + Entry in HBox) === */
+    email_hbox = create_hbox(10, FALSE);
+    update_box(email_hbox);
+    
+    email_label = create_label();
+    email_label->text = "Email:";
+    email_label->width = 80;
+    email_label->style = "bold";
+    update_label(email_label);
+    
+    email_entry = create_entry();
+    email_entry->width = 250;
+    email_entry->placeholder_text = "Enter your email";
+    update_entry(email_entry);
+    
+    add_to_box(email_hbox, email_label->label);
+    add_to_box(email_hbox, email_entry->entry);
+    
+    /* === Row 3: Buttons (Submit + Clear in HBox) === */
+    button_hbox = create_hbox(10, TRUE);  /* TRUE = equal width buttons */
+    update_box(button_hbox);
+    
+    submit_btn = create_button();
+    submit_btn->label = "Submit";
+    submit_btn->bg_color = "#4CAF50";
+    submit_btn->click_callback = on_submit_clicked;
+    update_button(submit_btn);
+    
+    clear_btn = create_button();
+    clear_btn->label = "Clear";
+    clear_btn->bg_color = "#f44336";
+    clear_btn->click_callback = on_clear_clicked;
+    update_button(clear_btn);
+    
+    add_to_box(button_hbox, submit_btn->button);
+    add_to_box(button_hbox, clear_btn->button);
+    
+    /* === Result label (full width) === */
+    result_label = create_label();
+    result_label->text = "Fill the form and click Submit";
+    result_label->color = "#0066cc";
+    result_label->bg_color = "#eef5ff";
+    result_label->width = 380;
+    result_label->height = 50;
+    result_label->position = "center";
+    update_label(result_label);
+    
+    /* Add all rows to main vertical box */
+    add_to_box(main_vbox, name_hbox->box);
+    add_to_box(main_vbox, email_hbox->box);
+    add_to_box(main_vbox, button_hbox->box);
+    add_to_box(main_vbox, result_label->label);
+    
+    /* Add main box to window */
+    add_to_window(win, main_vbox->box);
+    
+    close_window(win);
+    display_window(win);
+    
+    MainStart();
+    ProgramEnd();
+    return 0;
+}
+</file>
+
+<file path="button.c">
+#include "structures.h"
+
+int main(){
+    ProgramStart();
+
+    window *main_window = create_window();
+    main_window->title = " Button Example ";
+    main_window->resizable = TRUE;
+    update_window(main_window);
+
+    button *btn = create_button();
+    btn->label = "Click Me!";
+    btn->bg_color = "#121212"; // Green background
+    btn->label_style = "color: white; font-size: 16px;";
+    btn->width = 150;
+    btn->height = 50;
+    btn->callback_data = NULL;
+    update_button(btn);
+
+    add_to_window(main_window, btn->button);
+    display_window(main_window);
+    close_window(main_window);
+    MainStart();
+    return 0;
+}
+</file>
+
+<file path="checkB.c">
+#include <stdio.h>
+#include <stdlib.h>
+#include "structures.h"
+
+window *win = NULL;
+box *vbox = NULL;
+check_button *chk = NULL;
+
+void on_check_toggled(GtkWidget *widget, gpointer data) {
+    if (is_check_button_active(chk)) {
+        printf("Checkbox is checked!\n");
+    } else {
+        printf("Checkbox is unchecked!\n");
+    }
+}
+
+int main() {
+    ProgramStart();
+    
+    /* Window */
+    win = create_window();
+    win->title = "Simple Check";
+    win->width = 250;
+    win->height = 100;
+    update_window(win);
+    
+    /* Box */
+    vbox = create_vbox(10, FALSE);
+    update_box(vbox);
+    
+    /* Check button */
+    chk = create_check_button();
+    chk->label = "Click me";
+    chk->toggled_callback = on_check_toggled;
+    update_check_button(chk);
+    
+    /* Add to window */
+    add_to_box(vbox, chk->checkbutton);
+    add_to_window(win, vbox->box);
+    
+    close_window(win);
+    display_window(win);
+    
+    MainStart();
+    ProgramEnd();
+    return 0;
+}
+</file>
+
+<file path="exam.c">
+#include "structures.h"
+
+int main(int argc, char *argv[]) {
+    ProgramStart();
+    window *main_window = create_window();
+    main_window->title = "Presentation ordinateur";
+    main_window->width = 400;
+    main_window->height = 300;
+    update_window(main_window);
+
+    menu *main_menu = create_horizontal_menu();
+    add_menu_item(main_menu, "File", NULL, NULL);
+    menu *edit_submenu = create_vertical_menu();
+    add_menu_item(edit_submenu, "Cut", NULL, NULL);
+    add_menu_item(edit_submenu, "Copy", NULL, NULL);
+    add_menu_item(edit_submenu, "Paste", NULL, NULL);
+    add_menu_item(main_menu, "Edit", NULL, NULL);
+    add_menu_item(main_menu, "Edit", NULL, NULL);
+    add_menu_item(main_menu, "View", NULL, NULL);
+    add_menu_item(main_menu, "Exit", NULL, NULL);
+    ADD_TO_WINDOW(main_window, main_menu->menu_widget);
+
+    display_window(main_window);
+    close_window(main_window);
+    MainStart();
+    return 0;
+}
+</file>
+
+<file path="image.c">
+#include <stdio.h>
+#include <stdlib.h>
+#include "structures.h"
+
+/* Global variables */
+window *win = NULL;
+box *vbox = NULL;
+image *img = NULL;
+label *info = NULL;
+
+int main() {
+    /* Initialize GTK */
+    ProgramStart();
+    
+    /* Create window */
+    win = create_window();
+    win->title = "Simple Image Display";
+    win->width = 350;
+    win->height = 350;
+    update_window(win);
+    
+    /* Create vertical box */
+    vbox = create_vbox(15, FALSE);
+    vbox->margin_top = 20;
+    vbox->margin_bottom = 20;
+    vbox->margin_left = 20;
+    vbox->margin_right = 20;
+    update_box(vbox);
+    
+    /* Create image from an icon (no file needed) */
+    img = create_image();
+    img->icon_name = "face-smile";  /* GTK built-in icon */
+    img->file_name = "image.jpg";  /* This will be ignored since icon_name is set */
+    img->width = 400;
+    img->height = 300;
+    img->position = "center";
+    update_image(img);
+    
+    /* Create info label */
+    info = create_label();
+    info->text = "This is a smiley icon\n(from GTK built-in icons)";
+    info->color = "#0066cc";
+    info->position = "center";
+    update_label(info);
+    
+    /* Add to box */
+    add_to_box(vbox, img->image);
+    add_to_box(vbox, info->label);
+    
+    /* Add to window */
+    add_to_window(win, vbox->box);
+    
+    /* Close handler */
+    close_window(win);
+    
+    /* Display */
+    display_window(win);
+    MainStart();
+    ProgramEnd();
+    
+    return 0;
+}
+</file>
+
+<file path="menubutton.c">
+#include "structures.h"
+
+// Callback functions
+void on_button_click(GtkWidget *widget, gpointer data) {
+    g_print("Button clicked! Data: %s\n", (char*)data);
+}
+
+void on_entry_changed(GtkWidget *widget, gpointer data) {
+    entry *en = (entry*)data;
+    g_print("Entry text: %s\n", get_entry_text(en));
+}
+
+int main(int argc, char *argv[]) {
+    ProgramStart();
+    
+    // Create window
+    window *win = create_window();
+    win->title = "My Application";
+    win->width = 600;
+    win->height = 400;
+    win->resizable = TRUE;
+    win->bg_color = "#f0f0f0";
+    
+    // Create header bar
+    header_bar *hdb = create_header_bar();
+    hdb->title = "My App";
+    hdb->title_style = "bold";
+    hdb->close_button_show = TRUE;
+    
+    // Create a button
+    button *btn = create_button();
+    btn->label = "Click Me";
+    btn->bg_color = "#4CAF50";
+    btn->label_style = "bold";
+    btn->width = 120;
+    btn->height = 40;
+    btn->click_callback = on_button_click;
+    btn->callback_data = "Hello from button";
+    
+    // Create a label
+    label *lb = create_label();
+    lb->text = "Welcome to my app!";
+    lb->color = "#333333";
+    lb->font_family = "Arial";
+    lb->style = "bold";
+    lb->position = "center";
+    
+    // Create an entry
+    entry *en = create_entry();
+    en->placeholder_text = "Enter text here...";
+    en->width = 200;
+    en->height = 35;
+    en->bg_color = "#ffffff";
+    en->color = "#000000";
+    en->changed_callback = on_entry_changed;
+    en->callback_data = en;
+    
+    // Create a progress bar
+    progress_bar *pb = create_progress_bar();
+    pb->width = 300;
+    pb->height = 25;
+    pb->show_text = TRUE;
+    
+    // Create a spinner
+    spinner *spin = create_spinner();
+    spin->text = "Loading...";
+    spin->active = TRUE;
+    
+    // Create a box to organize widgets
+    box *vbox = create_vbox(10, FALSE);
+    vbox->margin_top = 20;
+    vbox->margin_bottom = 20;
+    vbox->margin_left = 20;
+    vbox->margin_right = 20;
+    
+    // Add widgets to box
+    add_to_box(vbox, lb->label);
+    add_to_box(vbox, en->entry);
+    add_to_box(vbox, btn->button);
+    add_to_box(vbox, pb->progress);
+    add_to_box(vbox, get_spinner_widget(spin));
+    
+    // Update all widgets (apply their properties)
+    update_window(win);
+    update_header_bar(hdb);
+    update_button(btn);
+    update_label(lb);
+    update_entry(en);
+    update_progress_bar(pb);
+    update_spinner(spin);
+    update_box(vbox);
+    
+    // Add to window
+    ADD_TO_HEADER_START(hdb, get_spinner_widget(spin));
+    ADD_TO_HEADER_END(hdb, btn->button);
+    ADD_TO_WINDOW(win, get_box_widget(vbox));
+    ADD_TO_WINDOW(win, hdb->header_bar);
+    
+    // Start progress bar pulse
+    start_progress_pulse(pb);
+    
+    // Set progress value after 3 seconds
+    // This would need proper implementation - just an example
+    
+    // Display window
+    display_window(win);
+    display_header_bar(hdb);
+    
+    MainStart();
+    ProgramEnd();
+    
+    return 0;
+}
+</file>
+
+<file path="progressBar.c">
+#include <stdio.h>
+#include <stdlib.h>
+#include "structures.h"
+
+/* Global variables */
+window *win = NULL;
+box *vbox = NULL;
+progress_bar *pb = NULL;
+button *btn = NULL;
+guint timeout_id = 0;
+
+/* Function to update progress */
+gboolean update_progress(gpointer data) {
+    static double value = 0.0;
+    
+    value += 0.05;  /* Increase by 5% each time */
+    
+    if (value >= 1.0) {
+        value = 1.0;
+        set_progress_value(pb, value);
+        timeout_id = 0;
+        return FALSE;  /* Stop the timer */
+    }
+    
+    set_progress_value(pb, value);
+    return TRUE;  /* Continue the timer */
+}
+
+/* Button click callback */
+void on_button_click(GtkWidget *widget, gpointer data) {
+    set_progress_value(pb, 0.0);  /* Reset to 0 */
+    
+    /* Start timer to update progress every 100ms */
+    if (timeout_id) {
+        g_source_remove(timeout_id);
+    }
+    timeout_id = g_timeout_add(100, update_progress, NULL);
+}
+
+int main() {
+    /* Initialize GTK */
+    ProgramStart();
+    
+    /* Create window */
+    win = create_window();
+    win->title = "Progress Bar Example";
+    win->width = 400;
+    win->height = 200;
+    win->resizable = FALSE;
+    
+    /* Create vertical box */
+    vbox = create_vbox(10, FALSE);
+    vbox->margin_top = 20;
+    vbox->margin_bottom = 20;
+    vbox->margin_left = 20;
+    vbox->margin_right = 20;
+    update_box(vbox);
+    
+    /* Create progress bar */
+    pb = create_progress_bar();
+    pb->width = 300;
+    pb->height = 30;
+    pb->show_text = TRUE;  /* Show percentage text */
+    update_progress_bar(pb);
+    
+    /* Create button */
+    btn = create_button();
+    btn->label = "Start Progress";
+    btn->width = 150;
+    btn->height = 40;
+    btn->click_callback = on_button_click;
+    update_button(btn);
+    
+    /* Add widgets to box */
+    add_to_box(vbox, pb->progress);
+    add_to_box(vbox, btn->button);
+    
+    /* Add box to window */
+    add_to_window(win, vbox->box);
+    
+    /* Close window handler */
+    close_window(win);
+    
+    /* Display window */
+    display_window(win);
+    
+    /* Start main loop */
+    MainStart();
+    
+    /* Cleanup */
+    ProgramEnd();
+    return 0;
+}
+</file>
+
+<file path="prompt.c">
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "structures.h"
+
+/* Global variables */
+window *win = NULL;
+box *vbox = NULL;
+entry *input_entry = NULL;
+label *prompt_label = NULL;
+label *result_label = NULL;
+button *submit_btn = NULL;
+button *clear_btn = NULL;
+
+/* Callback for submit button */
+void on_submit_clicked(GtkWidget *widget, gpointer data) {
+    char *text = get_entry_text(input_entry);
+    
+    if (text && strlen(text) > 0) {
+        char result[256];
+        snprintf(result, sizeof(result), "You entered: %s", text);
+        gtk_label_set_text(GTK_LABEL(result_label->label), result);
+    } else {
+        gtk_label_set_text(GTK_LABEL(result_label->label), "Please enter some text!");
+    }
+}
+
+/* Callback for clear button */
+void on_clear_clicked(GtkWidget *widget, gpointer data) {
+    set_entry_text(input_entry, "");
+    gtk_label_set_text(GTK_LABEL(result_label->label), "Cleared!");
+}
+
+/* Callback for entry changed event */
+void on_entry_changed(GtkWidget *widget, gpointer data) {
+    char *text = get_entry_text(input_entry);
+    if (text && strlen(text) > 0) {
+        gtk_label_set_text(GTK_LABEL(result_label->label), "Typing...");
+    } else {
+        gtk_label_set_text(GTK_LABEL(result_label->label), "Waiting for input...");
+    }
+}
+
+int main() {
+    /* Initialize GTK */
+    ProgramStart();
+    
+    /* Create window */
+    win = create_window();
+    win->title = "Entry (Text Input) Example";
+    win->width = 450;
+    win->height = 300;
+    win->resizable = FALSE;
+    update_window(win);
+    
+    /* Create vertical box with spacing */
+    vbox = create_vbox(15, FALSE);
+    vbox->margin_top = 20;
+    vbox->margin_bottom = 20;
+    vbox->margin_left = 20;
+    vbox->margin_right = 20;
+    update_box(vbox);
+    
+    /* Create prompt label */
+    prompt_label = create_label();
+    prompt_label->text = "Enter your name:";
+    prompt_label->color = "#333333";
+    prompt_label->style = "bold";
+    prompt_label->position = "left";
+    update_label(prompt_label);
+    
+    /* Create entry field */
+    input_entry = create_entry();
+    input_entry->width = 300;
+    input_entry->height = 40;
+    input_entry->placeholder_text = "Type something here...";
+    input_entry->bg_color = "#f5f5f5";
+    input_entry->color = "#000000";
+    input_entry->border_width = 1;
+    input_entry->margin_top = 5;
+    input_entry->margin_bottom = 5;
+    input_entry->changed_callback = on_entry_changed;
+    update_entry(input_entry);
+    
+    /* Create horizontal box for buttons */
+    box *button_box = create_hbox(10, FALSE);
+    update_box(button_box);
+    
+    /* Create submit button */
+    submit_btn = create_button();
+    submit_btn->label = "Submit";
+    submit_btn->width = 100;
+    submit_btn->height = 35;
+    submit_btn->bg_color = "#4CAF50";
+    submit_btn->click_callback = on_submit_clicked;
+    update_button(submit_btn);
+    
+    /* Create clear button */
+    clear_btn = create_button();
+    clear_btn->label = "Clear";
+    clear_btn->width = 100;
+    clear_btn->height = 35;
+    clear_btn->bg_color = "#f44336";
+    clear_btn->click_callback = on_clear_clicked;
+    update_button(clear_btn);
+    
+    /* Add buttons to horizontal box */
+    add_to_box(button_box, submit_btn->button);
+    add_to_box(button_box, clear_btn->button);
+    
+    /* Create result label */
+    result_label = create_label();
+    result_label->text = "Waiting for input...";
+    result_label->color = "#0066cc";
+    result_label->bg_color = "#eef5ff";
+    result_label->width = 380;
+    result_label->height = 50;
+    result_label->style = "italic";
+    result_label->position = "center";
+    update_label(result_label);
+    
+    /* Add all widgets to main box */
+    add_to_box(vbox, prompt_label->label);
+    add_to_box(vbox, input_entry->entry);
+    add_to_box(vbox, button_box->box);
+    add_to_box(vbox, result_label->label);
+    
+    /* Add box to window */
+    add_to_window(win, vbox->box);
+    
+    /* Close window handler */
+    close_window(win);
+    
+    /* Display window */
+    display_window(win);
+    
+    /* Start main loop */
+    MainStart();
+    
+    /* Cleanup */
+    ProgramEnd();
+    return 0;
+}
+</file>
+
+<file path="radio.c">
+#include <stdio.h>
+#include <stdlib.h>
+#include "structures.h"
+
+window *win = NULL;
+box *vbox = NULL;
+box *styled_box = NULL;
+radio_button *small = NULL;
+radio_button *medium = NULL;
+radio_button *large = NULL;
+label *price_label = NULL;
+
+void on_size_changed(GtkWidget *widget, gpointer data) {
+    char price[100];
+    
+    if (is_radio_button_active(small))
+        snprintf(price, sizeof(price), "Price: $5.99");
+    else if (is_radio_button_active(medium))
+        snprintf(price, sizeof(price), "Price: $7.99");
+    else if (is_radio_button_active(large))
+        snprintf(price, sizeof(price), "Price: $9.99");
+    
+    gtk_label_set_text(GTK_LABEL(price_label->label), price);
+}
+
+int main() {
+    ProgramStart();
+    
+    win = create_window();
+    win->title = "Coffee Size Selector";
+    win->width = 350;
+    win->height = 280;
+    win->bg_color = "#f5f0e1";
+    update_window(win);
+    
+    /* Main box */
+    vbox = create_vbox(15, FALSE);
+    vbox->bg_color = "#f5f0e1";
+    update_box(vbox);
+    
+    /* Title */
+    label *title = create_label();
+    title->text = "Select Coffee Size";
+    title->color = "#6b3e1f";
+    title->style = "bold";
+    title->font_family = "Georgia";
+    title->position = "center";
+    update_label(title);
+    
+    /* Styled box for radio buttons */
+    styled_box = create_vbox(8, FALSE);
+    styled_box->bg_color = "#fff8f0";
+    styled_box->border_width = 2;
+    update_box(styled_box);
+    
+    /* Radio buttons */
+    small = create_radio_button("size_group", "Small (8 oz)");
+    small->color = "#333";
+    small->active = TRUE;
+    small->toggled_callback = on_size_changed;
+    update_radio_button(small);
+    
+    medium = create_radio_button("size_group", "Medium (12 oz)");
+    medium->color = "#333";
+    medium->toggled_callback = on_size_changed;
+    update_radio_button(medium);
+    
+    large = create_radio_button("size_group", "Large (16 oz)");
+    large->color = "#333";
+    large->toggled_callback = on_size_changed;
+    update_radio_button(large);
+    
+    /* Price label */
+    price_label = create_label();
+    price_label->text = "Price: $5.99";
+    price_label->color = "#d2691e";
+    price_label->style = "bold";
+    price_label->font_family = "Arial";
+    price_label->position = "center";
+    price_label->bg_color = "#fff8f0";
+    price_label->width = 200;
+    price_label->height = 40;
+    update_label(price_label);
+    
+    /* Add to styled box */
+    add_to_box(styled_box, small->radio_button);
+    add_to_box(styled_box, medium->radio_button);
+    add_to_box(styled_box, large->radio_button);
+    
+    /* Add all to main box */
+    add_to_box(vbox, title->label);
+    add_to_box(vbox, styled_box->box);
+    add_to_box(vbox, price_label->label);
+    
+    add_to_window(win, vbox->box);
+    close_window(win);
+    display_window(win);
+    
+    MainStart();
+    ProgramEnd();
+    return 0;
+}
+</file>
+
+<file path="spinner.c">
+#include "structures.h"
+
+int main() {
+    ProgramStart();
+
+    window *main_window = create_window();
+    main_window->title = "Spinner Example";
+    main_window->width = 400;
+    main_window->height = 300;
+    main_window->resizable = TRUE;
+    update_window(main_window);
+
+    spinner *spin = create_spinner();
+    spin->text = "Loading...";
+    spin->width = 100;
+    spin->height = 100;
+    update_spinner(spin);
+
+    add_to_window(main_window, spin->container);
+    display_window(main_window);
+
+    start_spinner(spin);
+
+    close_window(main_window);
+    MainStart();
+    return 0;
+}
+</file>
+
+<file path="structures.c">
+#include "structures.h"
+#include <gdk/gdk.h>
+
+GtkCssProvider *global_css_provider = NULL;
+
+void ProgramStart(){
+    gtk_init(NULL, NULL);
+    global_css_provider = gtk_css_provider_new();
+}
+
+void ProgramEnd(){
+    gtk_main_quit();
+    if (global_css_provider) {
+        g_object_unref(global_css_provider);
+    }
+}
+
+void MainStart(){
+    gtk_main();
+}
+
+void apply_css(GtkWidget *widget, const char *css) {
+    if (!widget || !css) return;
+    
+    GtkCssProvider *provider = gtk_css_provider_new();
+    GError *error = NULL;
+    
+    if (!gtk_css_provider_load_from_data(provider, css, -1, &error)) {
+        g_printerr("CSS Error: %s\n", error->message);
+        g_error_free(error);
+    } else {
+        GtkStyleContext *context = gtk_widget_get_style_context(widget);
+        gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), 
+                                       GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    }
+    g_object_unref(provider);
+}
+
+void refresh_widget(GtkWidget *widget) {
+    if (widget) {
+        gtk_widget_queue_draw(widget);
+    }
+}
+
+/* ---------- Window Functions ---------- */
+
+window* create_window() {
+    window *wn = malloc(sizeof(window));
+    if (!wn) exit(1);
+    
+    wn->win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    wn->title = NULL;
+    wn->icon_path = NULL;
+    wn->bg_image = NULL;
+    wn->bg_color = NULL;
+    wn->width = 400;
+    wn->height = 300;
+    wn->resizable = TRUE;
+    wn->modal = FALSE;
+    wn->opacity = 1.0;
+    wn->fullscreen = FALSE;
+    wn->keep_below = FALSE;
+    wn->type_win = GTK_WINDOW_TOPLEVEL;
+    wn->drawing_area = NULL;
+    wn->css_provider = NULL;
+    
+    return wn;
+}
+
+void update_window(window *wn) {
+    if (!wn || !wn->win) return;
+    
+    if (wn->title) {
+        gtk_window_set_title(GTK_WINDOW(wn->win), wn->title);
+    }
+    
+    gtk_window_set_default_size(GTK_WINDOW(wn->win), wn->width, wn->height);
+    gtk_window_set_resizable(GTK_WINDOW(wn->win), wn->resizable);
+    gtk_window_set_modal(GTK_WINDOW(wn->win), wn->modal);
+    gtk_widget_set_opacity(wn->win, wn->opacity);
+    
+    if (wn->bg_color) {
+        char css[256];
+        snprintf(css, sizeof(css), "window { background-color: %s; }", wn->bg_color);
+        if (!wn->css_provider) wn->css_provider = gtk_css_provider_new();
+        gtk_css_provider_load_from_data(wn->css_provider, css, -1, NULL);
+        GtkStyleContext *context = gtk_widget_get_style_context(wn->win);
+        gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(wn->css_provider), 
+                                       GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    }
+    
+    /* if (wn->icon_path) {
+        gtk_window_set_icon_from_file(GTK_WINDOW(wn->win), wn->icon_path, NULL);
+    } */
+   if (wn->icon_path) {
+        GError *error = NULL;
+        if (!gtk_window_set_icon_from_file(GTK_WINDOW(wn->win), wn->icon_path, &error)) {
+            g_printerr("Failed to load icon from %s: %s\n", wn->icon_path, error->message);
+            g_error_free(error);
+        }
+    }
+    
+    if (wn->fullscreen) {
+        gtk_window_fullscreen(GTK_WINDOW(wn->win));
+    }
+    if(wn->bg_image){
+        GtkWidget *bg_image = gtk_image_new_from_file(wn->bg_image);
+        gtk_container_add(GTK_CONTAINER(wn->win), bg_image);
+        gtk_widget_show(bg_image);
+    }
+}
+
+void display_window(window *wn) {
+    if (wn && wn->win) {
+        update_window(wn);
+        gtk_widget_show_all(wn->win);
+    }
+}
+
+void close_window(window *wn) {
+    if (wn && wn->win) {
+        g_signal_connect(wn->win, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    }
+}
+
+/* ---------- Header Bar Functions ---------- */
+
+header_bar* create_header_bar() {
+    header_bar *hdb = malloc(sizeof(header_bar));
+    if (!hdb) exit(1);
+    
+    hdb->header_bar = gtk_header_bar_new();
+    hdb->title = NULL;
+    hdb->sub_title = NULL;
+    hdb->title_style = NULL;
+    hdb->icon_path = NULL;
+    hdb->width = -1;
+    hdb->height = -1;
+    hdb->close_button_show = FALSE;
+    hdb->decoration_layout = NULL;
+    
+    GtkWidget *title_label = gtk_label_new("");
+    gtk_header_bar_set_custom_title(GTK_HEADER_BAR(hdb->header_bar), title_label);
+    
+    return hdb;
+}
+
+void update_header_bar(header_bar *hdb) {
+    if (!hdb || !hdb->header_bar) return;
+    
+    GtkWidget *title_widget = gtk_header_bar_get_custom_title(GTK_HEADER_BAR(hdb->header_bar));
+    
+    if (hdb->title && title_widget && GTK_IS_LABEL(title_widget)) {
+        gtk_label_set_text(GTK_LABEL(title_widget), hdb->title);
+        
+        if (hdb->title_style) {
+            PangoAttrList *attrs = pango_attr_list_new();
+            if (strstr(hdb->title_style, "bold")) {
+                pango_attr_list_insert(attrs, pango_attr_weight_new(PANGO_WEIGHT_BOLD));
+            }
+            if (strstr(hdb->title_style, "italic")) {
+                pango_attr_list_insert(attrs, pango_attr_style_new(PANGO_STYLE_ITALIC));
+            }
+            if (strstr(hdb->title_style, "underline")) {
+                pango_attr_list_insert(attrs, pango_attr_underline_new(PANGO_UNDERLINE_SINGLE));
+            }
+            gtk_label_set_attributes(GTK_LABEL(title_widget), attrs);
+            pango_attr_list_unref(attrs);
+        }
+    }
+    
+    if (hdb->sub_title) {
+        gtk_header_bar_set_subtitle(GTK_HEADER_BAR(hdb->header_bar), hdb->sub_title);
+    }
+    
+    gtk_header_bar_set_show_close_button(GTK_HEADER_BAR(hdb->header_bar), hdb->close_button_show);
+    
+    if (hdb->width > 0 && hdb->height > 0) {
+        gtk_widget_set_size_request(hdb->header_bar, hdb->width, hdb->height);
+    }
+}
+
+void display_header_bar(header_bar *hdb) {
+    if (hdb && hdb->header_bar) {
+        update_header_bar(hdb);
+        gtk_widget_show_all(hdb->header_bar);
+    }
+}
+
+/* ---------- Button Functions ---------- */
+
+button* create_button() {
+    button *btn = malloc(sizeof(button));
+    if (!btn) exit(1);
+    
+    btn->button = gtk_button_new();
+    btn->label = g_strdup("Button");
+    btn->bg_image = NULL;
+    btn->bg_color = NULL;
+    btn->label_style = NULL;
+    btn->width = -1;
+    btn->height = -1;
+    btn->click_callback = NULL;
+    btn->callback_data = NULL;
+    
+    gtk_button_set_label(GTK_BUTTON(btn->button), btn->label);
+    
+    return btn;
+}
+
+void update_button(button *btn) {
+    if (!btn || !btn->button) return;
+    
+    if (btn->label) {
+        gtk_button_set_label(GTK_BUTTON(btn->button), btn->label);
+    }
+    
+    if (btn->width > 0 && btn->height > 0) {
+        gtk_widget_set_size_request(btn->button, btn->width, btn->height);
+        gtk_widget_set_hexpand(btn->button, FALSE);
+        gtk_widget_set_vexpand(btn->button, FALSE);
+    }
+    
+    if (btn->bg_color) {
+        char css[256];
+        snprintf(css, sizeof(css), "button { background-color: %s; }", btn->bg_color);
+        apply_css(btn->button, css);
+        gtk_button_set_relief(GTK_BUTTON(btn->button), GTK_RELIEF_NONE);
+    }
+    
+    if (btn->label_style) {
+        GtkWidget *label_widget = gtk_bin_get_child(GTK_BIN(btn->button));
+        if (label_widget && GTK_IS_LABEL(label_widget)) {
+            PangoAttrList *attrs = pango_attr_list_new();
+            if (strstr(btn->label_style, "bold")) {
+                pango_attr_list_insert(attrs, pango_attr_weight_new(PANGO_WEIGHT_BOLD));
+            }
+            if (strstr(btn->label_style, "italic")) {
+                pango_attr_list_insert(attrs, pango_attr_style_new(PANGO_STYLE_ITALIC));
+            }
+            gtk_label_set_attributes(GTK_LABEL(label_widget), attrs);
+            pango_attr_list_unref(attrs);
+        }
+    }
+    
+    if (btn->click_callback) {
+        g_signal_connect(btn->button, "clicked", G_CALLBACK(btn->click_callback), btn->callback_data);
+    }
+}
+
+/* ---------- Label Functions ---------- */
+
+label* create_label() {
+    label *lb = malloc(sizeof(label));
+    if (!lb) exit(1);
+    
+    lb->label = gtk_label_new("");
+    lb->text = g_strdup("Label");
+    lb->color = NULL;
+    lb->bg_color = NULL;
+    lb->font_family = NULL;
+    lb->style = NULL;
+    lb->position = NULL;
+    lb->width = -1;
+    lb->height = -1;
+    
+    gtk_label_set_text(GTK_LABEL(lb->label), lb->text);
+    
+    return lb;
+}
+
+void update_label(label *lb) {
+    if (!lb || !lb->label) return;
+    
+    if (lb->text) {
+        gtk_label_set_text(GTK_LABEL(lb->label), lb->text);
+    }
+    
+    if (lb->width > 0 && lb->height > 0) {
+        gtk_widget_set_size_request(lb->label, lb->width, lb->height);
+    }
+    
+    GString *css = g_string_new("label { ");
+    if (lb->color) {
+        g_string_append_printf(css, "color: %s; ", lb->color);
+    }
+    if (lb->bg_color) {
+        g_string_append_printf(css, "background-color: %s; ", lb->bg_color);
+    }
+    if (lb->font_family) {
+        g_string_append_printf(css, "font-family: '%s'; ", lb->font_family);
+    }
+    g_string_append(css, "}");
+    
+    apply_css(lb->label, css->str);
+    g_string_free(css, TRUE);
+    
+    if (lb->style) {
+        PangoAttrList *attrs = pango_attr_list_new();
+        if (strstr(lb->style, "bold")) {
+            pango_attr_list_insert(attrs, pango_attr_weight_new(PANGO_WEIGHT_BOLD));
+        }
+        if (strstr(lb->style, "italic")) {
+            pango_attr_list_insert(attrs, pango_attr_style_new(PANGO_STYLE_ITALIC));
+        }
+        if (strstr(lb->style, "underline")) {
+            pango_attr_list_insert(attrs, pango_attr_underline_new(PANGO_UNDERLINE_SINGLE));
+        }
+        gtk_label_set_attributes(GTK_LABEL(lb->label), attrs);
+        pango_attr_list_unref(attrs);
+    }
+    
+    if (lb->position) {
+        if (strcmp(lb->position, "left") == 0) {
+            gtk_label_set_xalign(GTK_LABEL(lb->label), 0.0);
+        } else if (strcmp(lb->position, "right") == 0) {
+            gtk_label_set_xalign(GTK_LABEL(lb->label), 1.0);
+        } else if (strcmp(lb->position, "center") == 0) {
+            gtk_label_set_xalign(GTK_LABEL(lb->label), 0.5);
+        }
+    }
+}
+
+/* ---------- Progress Bar Functions ---------- */
+
+progress_bar* create_progress_bar() {
+    progress_bar *pb = malloc(sizeof(progress_bar));
+    if (!pb) exit(1);
+    
+    pb->progress = gtk_progress_bar_new();
+    pb->fraction = 0.0;
+    pb->text = NULL;
+    pb->pulse_text = NULL;
+    pb->width = -1;
+    pb->height = -1;
+    pb->inverted = FALSE;
+    pb->orientation = GTK_ORIENTATION_HORIZONTAL;
+    pb->show_text = FALSE;
+    pb->is_pulsing = FALSE;
+    pb->pulse_interval = 100;
+    pb->pulse_timeout_id = 0;
+    
+    return pb;
+}
+
+static gboolean pulse_callback(gpointer data) {
+    progress_bar *pb = (progress_bar*)data;
+    if (pb && pb->is_pulsing && pb->progress) {
+        gtk_progress_bar_pulse(GTK_PROGRESS_BAR(pb->progress));
+        return TRUE;
+    }
+    return FALSE;
+}
+
+void update_progress_bar(progress_bar *pb) {
+    if (!pb || !pb->progress) return;
+    
+    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(pb->progress), pb->fraction);
+    
+    if (pb->text) {
+        gtk_progress_bar_set_text(GTK_PROGRESS_BAR(pb->progress), pb->text);
+        gtk_progress_bar_set_show_text(GTK_PROGRESS_BAR(pb->progress), TRUE);
+    }
+    
+    if (pb->width > 0 && pb->height > 0) {
+        gtk_widget_set_size_request(pb->progress, pb->width, pb->height);
+    }
+    
+    gtk_progress_bar_set_inverted(GTK_PROGRESS_BAR(pb->progress), pb->inverted);
+    gtk_orientable_set_orientation(GTK_ORIENTABLE(pb->progress), pb->orientation);
+    gtk_progress_bar_set_show_text(GTK_PROGRESS_BAR(pb->progress), pb->show_text);
+}
+
+void start_progress_pulse(progress_bar *pb) {
+    if (!pb) return;
+    pb->is_pulsing = TRUE;
+    if (pb->pulse_timeout_id) {
+        g_source_remove(pb->pulse_timeout_id);
+    }
+    pb->pulse_timeout_id = g_timeout_add(pb->pulse_interval, pulse_callback, pb);
+}
+
+void stop_progress_pulse(progress_bar *pb) {
+    if (!pb) return;
+    pb->is_pulsing = FALSE;
+    if (pb->pulse_timeout_id) {
+        g_source_remove(pb->pulse_timeout_id);
+        pb->pulse_timeout_id = 0;
+    }
+}
+
+void set_progress_value(progress_bar *pb, double value) {
+    if (!pb) return;
+    pb->fraction = value < 0 ? 0 : (value > 1 ? 1 : value);
+    if (pb->progress) {
+        gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(pb->progress), pb->fraction);
+    }
+}
+
+/* ---------- Spinner Functions ---------- */
+
+spinner* create_spinner() {
+    spinner *spin = malloc(sizeof(spinner));
+    if (!spin) exit(1);
+    
+    spin->container = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    spin->spinner = gtk_spinner_new();
+    spin->label = gtk_label_new("");
+    spin->text = NULL;
+    spin->width = -1;
+    spin->height = -1;
+    spin->active = FALSE;
+    spin->spinning = FALSE;
+    
+    gtk_box_pack_start(GTK_BOX(spin->container), spin->spinner, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(spin->container), spin->label, FALSE, FALSE, 0);
+    gtk_widget_show_all(spin->container);
+    
+    return spin;
+}
+
+void update_spinner(spinner *spin) {
+    if (!spin) return;
+    
+    if (spin->text) {
+        gtk_label_set_text(GTK_LABEL(spin->label), spin->text);
+    }
+    
+    if (spin->width > 0 && spin->height > 0) {
+        gtk_widget_set_size_request(spin->container, spin->width, spin->height);
+    }
+    
+    if (spin->active && !spin->spinning) {
+        start_spinner(spin);
+    } else if (!spin->active && spin->spinning) {
+        stop_spinner(spin);
+    }
+}
+
+void start_spinner(spinner *spin) {
+    if (!spin || !spin->spinner) return;
+    spin->active = TRUE;
+    spin->spinning = TRUE;
+    gtk_spinner_start(GTK_SPINNER(spin->spinner));
+}
+
+void stop_spinner(spinner *spin) {
+    if (!spin || !spin->spinner) return;
+    spin->active = FALSE;
+    spin->spinning = FALSE;
+    gtk_spinner_stop(GTK_SPINNER(spin->spinner));
+}
+
+GtkWidget* get_spinner_widget(spinner *spin) {
+    return spin ? spin->container : NULL;
+}
+
+/* ---------- Image Functions ---------- */
+
+image* create_image() {
+    image *im = malloc(sizeof(image));
+    if (!im) exit(1);
+    
+    im->image = gtk_image_new();
+    im->file_name = NULL;
+    im->animation_file = NULL;
+    im->icon_name = NULL;
+    im->position = NULL;
+    im->border_color = NULL;
+    im->width = -1;
+    im->height = -1;
+    im->border_width = 0;
+    im->border_radius = 0;
+    im->pixel_size = -1;
+    im->click_callback = NULL;
+    im->callback_data = NULL;
+    
+    return im;
+}
+
+void update_image(image *im) {
+    if (!im || !im->image) return;
+    
+    if (im->file_name) {
+        GError *error = NULL;
+        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(im->file_name, &error);
+        if (pixbuf) {
+            if (im->width > 0 && im->height > 0) {
+                GdkPixbuf *scaled = gdk_pixbuf_scale_simple(pixbuf, im->width, im->height, 
+                                                            GDK_INTERP_BILINEAR);
+                gtk_image_set_from_pixbuf(GTK_IMAGE(im->image), scaled);
+                g_object_unref(scaled);
+            } else {
+                gtk_image_set_from_pixbuf(GTK_IMAGE(im->image), pixbuf);
+            }
+            g_object_unref(pixbuf);
+        }
+    }
+    
+    if (im->width > 0 && im->height > 0) {
+        gtk_widget_set_size_request(im->image, im->width, im->height);
+    }
+    
+    if (im->border_width > 0 || im->border_radius > 0 || im->border_color) {
+        GString *css = g_string_new("image { ");
+        if (im->border_width > 0) {
+            g_string_append_printf(css, "border-width: %dpx; border-style: solid; ", im->border_width);
+        }
+        if (im->border_radius > 0) {
+            g_string_append_printf(css, "border-radius: %dpx; ", im->border_radius);
+        }
+        if (im->border_color) {
+            g_string_append_printf(css, "border-color: %s; ", im->border_color);
+        }
+        g_string_append(css, "}");
+        apply_css(im->image, css->str);
+        g_string_free(css, TRUE);
+    }
+    
+    if (im->position) {
+        if (strcmp(im->position, "left") == 0) {
+            gtk_widget_set_halign(im->image, GTK_ALIGN_START);
+        } else if (strcmp(im->position, "right") == 0) {
+            gtk_widget_set_halign(im->image, GTK_ALIGN_END);
+        } else if (strcmp(im->position, "center") == 0) {
+            gtk_widget_set_halign(im->image, GTK_ALIGN_CENTER);
+        }
+    }
+    
+    if (im->click_callback) {
+        g_signal_connect(im->image, "button-press-event", G_CALLBACK(im->click_callback), im->callback_data);
+    }
+}
+
+/* ---------- Entry Functions ---------- */
+
+entry* create_entry() {
+    entry *en = malloc(sizeof(entry));
+    if (!en) exit(1);
+    
+    en->entry = gtk_entry_new();
+    en->text = NULL;
+    en->placeholder_text = NULL;
+    en->bg_color = NULL;
+    en->color = NULL;
+    en->font_family = NULL;
+    en->label_style = NULL;
+    en->width = -1;
+    en->height = -1;
+    en->border_width = 0;
+    en->margin_top = en->margin_bottom = en->margin_left = en->margin_right = 0;
+    en->visibility = TRUE;
+    en->editable = TRUE;
+    en->has_frame = TRUE;
+    en->changed_callback = NULL;
+    en->callback_data = NULL;
+    
+    return en;
+}
+
+void update_entry(entry *en) {
+    if (!en || !en->entry) return;
+    
+    if (en->text) {
+        gtk_entry_set_text(GTK_ENTRY(en->entry), en->text);
+    }
+    
+    if (en->placeholder_text) {
+        gtk_entry_set_placeholder_text(GTK_ENTRY(en->entry), en->placeholder_text);
+    }
+    
+    if (en->width > 0 && en->height > 0) {
+        gtk_widget_set_size_request(en->entry, en->width, en->height);
+    }
+    
+    gtk_entry_set_visibility(GTK_ENTRY(en->entry), en->visibility);
+    gtk_editable_set_editable(GTK_EDITABLE(en->entry), en->editable);
+    gtk_entry_set_has_frame(GTK_ENTRY(en->entry), en->has_frame);
+    
+    GString *css = g_string_new("entry { ");
+    if (en->bg_color) {
+        g_string_append_printf(css, "background-color: %s; ", en->bg_color);
+    }
+    if (en->color) {
+        g_string_append_printf(css, "color: %s; ", en->color);
+    }
+    if (en->font_family) {
+        g_string_append_printf(css, "font-family: '%s'; ", en->font_family);
+    }
+    if (en->border_width > 0) {
+        g_string_append_printf(css, "border-width: %dpx; border-style: solid; ", en->border_width);
+    }
+    if (en->margin_top > 0 || en->margin_bottom > 0 || en->margin_left > 0 || en->margin_right > 0) {
+        g_string_append_printf(css, "margin-top: %dpx; margin-bottom: %dpx; ", 
+                               en->margin_top, en->margin_bottom);
+        g_string_append_printf(css, "margin-left: %dpx; margin-right: %dpx; ", 
+                               en->margin_left, en->margin_right);
+    }
+    g_string_append(css, "}");
+    apply_css(en->entry, css->str);
+    g_string_free(css, TRUE);
+    
+    if (en->changed_callback) {
+        g_signal_connect(en->entry, "changed", G_CALLBACK(en->changed_callback), en->callback_data);
+    }
+}
+
+char* get_entry_text(entry *en) {
+    if (!en || !en->entry) return NULL;
+    return (char*)gtk_entry_get_text(GTK_ENTRY(en->entry));
+}
+
+void set_entry_text(entry *en, const char *text) {
+    if (!en || !en->entry) return;
+    gtk_entry_set_text(GTK_ENTRY(en->entry), text);
+}
+
+/* ---------- Radio Button Functions ---------- */
+
+typedef struct RadioGroupNode {
+    char *group_id;
+    GSList *group;
+    struct RadioGroupNode *next;
+} RadioGroupNode;
+
+static RadioGroupNode *radio_groups = NULL;
+
+static GSList* get_or_create_radio_group(const char *group_id, GtkWidget *first_button) {
+    RadioGroupNode *current = radio_groups;
+    while (current) {
+        if (strcmp(current->group_id, group_id) == 0) {
+            return current->group;
+        }
+        current = current->next;
+    }
+    
+    RadioGroupNode *new_group = malloc(sizeof(RadioGroupNode));
+    new_group->group_id = g_strdup(group_id);
+    new_group->group = first_button ? gtk_radio_button_get_group(GTK_RADIO_BUTTON(first_button)) : NULL;
+    new_group->next = radio_groups;
+    radio_groups = new_group;
+    
+    return new_group->group;
+}
+
+static void add_to_radio_group(const char *group_id, GtkWidget *button) {
+    RadioGroupNode *current = radio_groups;
+    while (current) {
+        if (strcmp(current->group_id, group_id) == 0) {
+            if (current->group) {
+                gtk_radio_button_set_group(GTK_RADIO_BUTTON(button), current->group);
+                current->group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
+            }
+            return;
+        }
+        current = current->next;
+    }
+}
+
+radio_button* create_radio_button(const char *group_id, const char *label) {
+    radio_button *rdb = malloc(sizeof(radio_button));
+    if (!rdb) exit(1);
+    
+    rdb->label = g_strdup(label);
+    rdb->group_id = g_strdup(group_id);
+    rdb->color = NULL;
+    rdb->bg_color = NULL;
+    rdb->width = -1;
+    rdb->height = -1;
+    rdb->position = NULL;
+    rdb->active = FALSE;
+    rdb->mode = TRUE;
+    rdb->toggled_callback = NULL;
+    rdb->callback_data = NULL;
+    
+    RadioGroupNode *existing = radio_groups;
+    while (existing) {
+        if (strcmp(existing->group_id, group_id) == 0) {
+            break;
+        }
+        existing = existing->next;
+    }
+    
+    if (!existing || !existing->group) {
+        rdb->radio_button = gtk_radio_button_new_with_label(NULL, label);
+        get_or_create_radio_group(group_id, rdb->radio_button);
+    } else {
+        rdb->radio_button = gtk_radio_button_new_with_label(existing->group, label);
+        existing->group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(rdb->radio_button));
+    }
+    
+    return rdb;
+}
+
+void update_radio_button(radio_button *rdb) {
+    if (!rdb || !rdb->radio_button) return;
+    
+    if (rdb->label) {
+        gtk_button_set_label(GTK_BUTTON(rdb->radio_button), rdb->label);
+    }
+    
+    if (rdb->width > 0 && rdb->height > 0) {
+        gtk_widget_set_size_request(rdb->radio_button, rdb->width, rdb->height);
+    }
+    
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rdb->radio_button), rdb->active);
+    gtk_toggle_button_set_mode(GTK_TOGGLE_BUTTON(rdb->radio_button), rdb->mode);
+    
+    if (rdb->position) {
+        if (strcmp(rdb->position, "left") == 0) {
+            gtk_widget_set_halign(rdb->radio_button, GTK_ALIGN_START);
+        } else if (strcmp(rdb->position, "right") == 0) {
+            gtk_widget_set_halign(rdb->radio_button, GTK_ALIGN_END);
+        } else if (strcmp(rdb->position, "center") == 0) {
+            gtk_widget_set_halign(rdb->radio_button, GTK_ALIGN_CENTER);
+        }
+    }
+    
+    GString *css = g_string_new("radio { ");
+    if (rdb->color) {
+        g_string_append_printf(css, "color: %s; ", rdb->color);
+    }
+    if (rdb->bg_color) {
+        g_string_append_printf(css, "background-color: %s; ", rdb->bg_color);
+    }
+    g_string_append(css, "}");
+    apply_css(rdb->radio_button, css->str);
+    g_string_free(css, TRUE);
+    
+    if (rdb->toggled_callback) {
+        g_signal_connect(rdb->radio_button, "toggled", 
+                        G_CALLBACK(rdb->toggled_callback), rdb->callback_data);
+    }
+}
+
+void set_radio_button_active(radio_button *rdb, gboolean active) {
+    if (!rdb) return;
+    rdb->active = active;
+    if (rdb->radio_button) {
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rdb->radio_button), active);
+    }
+}
+
+gboolean is_radio_button_active(radio_button *rdb) {
+    if (!rdb || !rdb->radio_button) return FALSE;
+    return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(rdb->radio_button));
+}
+
+/* ---------- Check Button Functions ---------- */
+
+check_button* create_check_button() {
+    check_button *chb = malloc(sizeof(check_button));
+    if (!chb) exit(1);
+    
+    chb->checkbutton = gtk_check_button_new();
+    chb->label = NULL;
+    chb->color = NULL;
+    chb->bg_color = NULL;
+    chb->font_family = NULL;
+    chb->label_style = NULL;
+    chb->width = -1;
+    chb->height = -1;
+    chb->position = NULL;
+    chb->active = FALSE;
+    chb->mode = TRUE;
+    chb->inconsistent = FALSE;
+    chb->draw_indicator = TRUE;
+    chb->toggled_callback = NULL;
+    chb->callback_data = NULL;
+    
+    return chb;
+}
+
+void update_check_button(check_button *chb) {
+    if (!chb || !chb->checkbutton) return;
+    
+    if (chb->label) {
+        gtk_button_set_label(GTK_BUTTON(chb->checkbutton), chb->label);
+    }
+    
+    if (chb->width > 0 && chb->height > 0) {
+        gtk_widget_set_size_request(chb->checkbutton, chb->width, chb->height);
+    }
+    
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chb->checkbutton), chb->active);
+    gtk_toggle_button_set_mode(GTK_TOGGLE_BUTTON(chb->checkbutton), chb->mode);
+    gtk_toggle_button_set_inconsistent(GTK_TOGGLE_BUTTON(chb->checkbutton), chb->inconsistent);
+    
+    if (chb->position) {
+        if (strcmp(chb->position, "left") == 0) {
+            gtk_widget_set_halign(chb->checkbutton, GTK_ALIGN_START);
+        } else if (strcmp(chb->position, "right") == 0) {
+            gtk_widget_set_halign(chb->checkbutton, GTK_ALIGN_END);
+        } else if (strcmp(chb->position, "center") == 0) {
+            gtk_widget_set_halign(chb->checkbutton, GTK_ALIGN_CENTER);
+        }
+    }
+    
+    GString *css = g_string_new("checkbutton { ");
+    if (chb->bg_color) {
+        g_string_append_printf(css, "background-color: %s; ", chb->bg_color);
+    }
+    g_string_append(css, "}");
+    apply_css(chb->checkbutton, css->str);
+    g_string_free(css, TRUE);
+    
+    if (chb->color) {
+        GtkWidget *label_widget = gtk_bin_get_child(GTK_BIN(chb->checkbutton));
+        if (label_widget && GTK_IS_LABEL(label_widget)) {
+            char css2[256];
+            snprintf(css2, sizeof(css2), "label { color: %s; }", chb->color);
+            apply_css(label_widget, css2);
+        }
+    }
+    
+    if (chb->font_family) {
+        GtkWidget *label_widget = gtk_bin_get_child(GTK_BIN(chb->checkbutton));
+        if (label_widget && GTK_IS_LABEL(label_widget)) {
+            char css2[256];
+            snprintf(css2, sizeof(css2), "label { font-family: '%s'; }", chb->font_family);
+            apply_css(label_widget, css2);
+        }
+    }
+    
+    if (chb->toggled_callback) {
+        g_signal_connect(chb->checkbutton, "toggled", 
+                        G_CALLBACK(chb->toggled_callback), chb->callback_data);
+    }
+}
+
+void set_check_button_active(check_button *chb, gboolean active) {
+    if (!chb) return;
+    chb->active = active;
+    if (chb->checkbutton) {
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chb->checkbutton), active);
+    }
+}
+
+gboolean is_check_button_active(check_button *chb) {
+    if (!chb || !chb->checkbutton) return FALSE;
+    return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chb->checkbutton));
+}
+
+/* ---------- Menu Functions ---------- */
+
+menu* create_horizontal_menu() {
+    menu *m = malloc(sizeof(menu));
+    if (!m) exit(1);
+    
+    m->menu_widget = gtk_menu_bar_new();
+    m->orientation = GTK_ORIENTATION_HORIZONTAL;
+    m->bg_color = NULL;
+    m->text_color = NULL;
+    m->item_spacing = 0;
+    
+    return m;
+}
+
+menu* create_vertical_menu() {
+    menu *m = malloc(sizeof(menu));
+    if (!m) exit(1);
+    
+    m->menu_widget = gtk_menu_new();
+    m->orientation = GTK_ORIENTATION_VERTICAL;
+    m->bg_color = NULL;
+    m->text_color = NULL;
+    m->item_spacing = 0;
+    
+    return m;
+}
+
+menu* create_submenu() {
+    return create_vertical_menu();
+}
+
+void add_menu_item(menu *m, const char *label, void (*callback)(GtkWidget*, gpointer), void *data) {
+    if (!m || !m->menu_widget) return;
+    
+    GtkWidget *item = gtk_menu_item_new_with_label(label);
+    g_signal_connect(item, "activate", G_CALLBACK(callback), data);
+    gtk_menu_shell_append(GTK_MENU_SHELL(m->menu_widget), item);
+    gtk_widget_show(item);
+}
+
+void add_menu_item_with_icon(menu *m, const char *label, const char *icon_name,
+                              void (*callback)(GtkWidget*, gpointer), void *data) {
+    if (!m || !m->menu_widget) return;
+    
+    GtkWidget *item = gtk_menu_item_new();
+    GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    GtkWidget *icon = gtk_image_new_from_icon_name(icon_name, GTK_ICON_SIZE_MENU);
+    GtkWidget *lbl = gtk_label_new(label);
+    
+    gtk_box_pack_start(GTK_BOX(hbox), icon, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox), lbl, FALSE, FALSE, 0);
+    gtk_widget_show_all(hbox);
+    gtk_container_add(GTK_CONTAINER(item), hbox);
+    
+    g_signal_connect(item, "activate", G_CALLBACK(callback), data);
+    gtk_menu_shell_append(GTK_MENU_SHELL(m->menu_widget), item);
+    gtk_widget_show(item);
+}
+
+void add_check_menu_item(menu *m, const char *label, gboolean active,
+                          void (*callback)(GtkWidget*, gpointer), void *data) {
+    if (!m || !m->menu_widget) return;
+    
+    GtkWidget *item = gtk_check_menu_item_new_with_label(label);
+    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), active);
+    g_signal_connect(item, "toggled", G_CALLBACK(callback), data);
+    gtk_menu_shell_append(GTK_MENU_SHELL(m->menu_widget), item);
+    gtk_widget_show(item);
+}
+
+void add_radio_menu_item(menu *m, const char *label, gboolean active,
+                          void (*callback)(GtkWidget*, gpointer), void *data) {
+    if (!m || !m->menu_widget) return;
+    
+    static GSList *radio_group = NULL;
+    GtkWidget *item = gtk_radio_menu_item_new_with_label(radio_group, label);
+    radio_group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(item));
+    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), active);
+    g_signal_connect(item, "toggled", G_CALLBACK(callback), data);
+    gtk_menu_shell_append(GTK_MENU_SHELL(m->menu_widget), item);
+    gtk_widget_show(item);
+}
+
+void add_menu_separator(menu *m) {
+    if (!m || !m->menu_widget) return;
+    
+    GtkWidget *sep = gtk_separator_menu_item_new();
+    gtk_menu_shell_append(GTK_MENU_SHELL(m->menu_widget), sep);
+    gtk_widget_show(sep);
+}
+
+void add_submenu(menu *parent, const char *label, menu *submenu) {
+    if (!parent || !parent->menu_widget || !submenu || !submenu->menu_widget) return;
+    
+    GtkWidget *item = gtk_menu_item_new_with_label(label);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu->menu_widget);
+    gtk_menu_shell_append(GTK_MENU_SHELL(parent->menu_widget), item);
+    gtk_widget_show(item);
+}
+
+void add_submenu_with_icon(menu *parent, const char *label, const char *icon_name, menu *submenu) {
+    if (!parent || !parent->menu_widget || !submenu || !submenu->menu_widget) return;
+    
+    GtkWidget *item = gtk_menu_item_new();
+    GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    GtkWidget *icon = gtk_image_new_from_icon_name(icon_name, GTK_ICON_SIZE_MENU);
+    GtkWidget *lbl = gtk_label_new(label);
+    
+    gtk_box_pack_start(GTK_BOX(hbox), icon, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox), lbl, FALSE, FALSE, 0);
+    gtk_widget_show_all(hbox);
+    gtk_container_add(GTK_CONTAINER(item), hbox);
+    
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu->menu_widget);
+    gtk_menu_shell_append(GTK_MENU_SHELL(parent->menu_widget), item);
+    gtk_widget_show(item);
+}
+
+menu_button* create_menu_button(const char *label) {
+    menu_button *mb = malloc(sizeof(menu_button));
+    if (!mb) exit(1);
+    
+    mb->button = gtk_button_new_with_label(label);
+    mb->label = g_strdup(label);
+    mb->icon_name = NULL;
+    mb->main_menu = NULL;
+    mb->width = -1;
+    mb->height = -1;
+    mb->bg_color = NULL;
+    mb->text_color = NULL;
+    mb->position = NULL;
+    
+    return mb;
+}
+
+menu_button* create_menu_button_with_icon(const char *icon_name) {
+    menu_button *mb = malloc(sizeof(menu_button));
+    if (!mb) exit(1);
+    
+    mb->button = gtk_button_new();
+    mb->label = NULL;
+    mb->icon_name = g_strdup(icon_name);
+    mb->main_menu = NULL;
+    mb->width = -1;
+    mb->height = -1;
+    mb->bg_color = NULL;
+    mb->text_color = NULL;
+    mb->position = NULL;
+    
+    GtkWidget *icon = gtk_image_new_from_icon_name(icon_name, GTK_ICON_SIZE_BUTTON);
+    gtk_container_add(GTK_CONTAINER(mb->button), icon);
+    gtk_widget_show(icon);
+    
+    return mb;
+}
+
+void set_menu_button_menu(menu_button *mb, menu *m) {
+    if (!mb || !mb->button || !m || !m->menu_widget) return;
+    
+    mb->main_menu = m;
+    
+    GtkWidget *menu_button = gtk_menu_button_new();
+    
+    if (GTK_IS_MENU(m->menu_widget)) {
+        gtk_menu_button_set_popup(GTK_MENU_BUTTON(menu_button), m->menu_widget);
+    }
+    
+    if (mb->label) {
+        gtk_button_set_label(GTK_BUTTON(menu_button), mb->label);
+    }
+    if (mb->icon_name) {
+        GtkWidget *icon = gtk_image_new_from_icon_name(mb->icon_name, GTK_ICON_SIZE_BUTTON);
+        gtk_container_add(GTK_CONTAINER(menu_button), icon);
+        gtk_widget_show(icon);
+    }
+    
+    if (mb->bg_color) {
+        char css[256];
+        snprintf(css, sizeof(css), "button { background-color: %s; }", mb->bg_color);
+        apply_css(menu_button, css);
+    }
+    
+    GtkWidget *old_button = mb->button;
+    mb->button = menu_button;
+    gtk_widget_destroy(old_button);
+}
+
+void update_menu_button(menu_button *mb) {
+    if (!mb || !mb->button) return;
+    
+    if (mb->width > 0 && mb->height > 0) {
+        gtk_widget_set_size_request(mb->button, mb->width, mb->height);
+    }
+    
+    GString *css = g_string_new("button { ");
+    if (mb->bg_color) {
+        g_string_append_printf(css, "background-color: %s; ", mb->bg_color);
+    }
+    if (mb->text_color) {
+        g_string_append_printf(css, "color: %s; ", mb->text_color);
+    }
+    g_string_append(css, "}");
+    apply_css(mb->button, css->str);
+    g_string_free(css, TRUE);
+    
+    if (mb->position) {
+        if (strcmp(mb->position, "left") == 0) {
+            gtk_widget_set_halign(mb->button, GTK_ALIGN_START);
+        } else if (strcmp(mb->position, "right") == 0) {
+            gtk_widget_set_halign(mb->button, GTK_ALIGN_END);
+        } else if (strcmp(mb->position, "center") == 0) {
+            gtk_widget_set_halign(mb->button, GTK_ALIGN_CENTER);
+        }
+    }
+}
+
+void add_menu_button_to_box(box *bx, menu_button *mb) {
+    if (!bx || !mb) return;
+    add_to_box(bx, mb->button);
+}
+
+void free_menu(menu *m) {
+    if (m) {
+        if (m->menu_widget) {
+            gtk_widget_destroy(m->menu_widget);
+        }
+        if (m->bg_color) g_free(m->bg_color);
+        if (m->text_color) g_free(m->text_color);
+        free(m);
+    }
+}
+
+void free_menu_button(menu_button *mb) {
+    if (mb) {
+        if (mb->button) gtk_widget_destroy(mb->button);
+        if (mb->label) g_free(mb->label);
+        if (mb->icon_name) g_free(mb->icon_name);
+        if (mb->bg_color) g_free(mb->bg_color);
+        if (mb->text_color) g_free(mb->text_color);
+        if (mb->position) g_free(mb->position);
+        free(mb);
+    }
+}
+
+/* ---------- Box Functions ---------- */
+
+box* create_box(GtkOrientation orientation, int spacing, gboolean homogeneous) {
+    box *bx = malloc(sizeof(box));
+    if (!bx) exit(1);
+    
+    bx->box = gtk_box_new(orientation, spacing);
+    bx->orientation = orientation;
+    bx->spacing = spacing;
+    bx->width = -1;
+    bx->height = -1;
+    bx->border_width = 0;
+    bx->bg_color = NULL;
+    bx->margin_top = bx->margin_bottom = bx->margin_left = bx->margin_right = 0;
+    bx->homogeneous = homogeneous;
+    bx->expand = FALSE;
+    bx->fill = TRUE;
+    bx->padding = 0;
+    
+    gtk_box_set_homogeneous(GTK_BOX(bx->box), homogeneous);
+    
+    return bx;
+}
+
+box* create_hbox(int spacing, gboolean homogeneous) {
+    return create_box(GTK_ORIENTATION_HORIZONTAL, spacing, homogeneous);
+}
+
+box* create_vbox(int spacing, gboolean homogeneous) {
+    return create_box(GTK_ORIENTATION_VERTICAL, spacing, homogeneous);
+}
+
+void update_box(box *bx) {
+    if (!bx || !bx->box) return;
+    
+    if (bx->width > 0 && bx->height > 0) {
+        gtk_widget_set_size_request(bx->box, bx->width, bx->height);
+    }
+    
+    gtk_container_set_border_width(GTK_CONTAINER(bx->box), bx->border_width);
+    gtk_box_set_spacing(GTK_BOX(bx->box), bx->spacing);
+    gtk_box_set_homogeneous(GTK_BOX(bx->box), bx->homogeneous);
+    
+    if (bx->bg_color) {
+        char css[256];
+        snprintf(css, sizeof(css), "box { background-color: %s; }", bx->bg_color);
+        apply_css(bx->box, css);
+    }
+    
+    if (bx->margin_top > 0 || bx->margin_bottom > 0 || bx->margin_left > 0 || bx->margin_right > 0) {
+        char css[256];
+        snprintf(css, sizeof(css), 
+                 "box { margin-top: %dpx; margin-bottom: %dpx; margin-left: %dpx; margin-right: %dpx; }",
+                 bx->margin_top, bx->margin_bottom, bx->margin_left, bx->margin_right);
+        apply_css(bx->box, css);
+    }
+}
+
+void add_to_box(box *bx, GtkWidget *widget) {
+    if (!bx || !bx->box || !widget) return;
+    gtk_box_pack_start(GTK_BOX(bx->box), widget, bx->expand, bx->fill, bx->padding);
+    gtk_widget_show(widget);
+}
+
+void add_to_box_with_properties(box *bx, GtkWidget *widget, gboolean expand, gboolean fill, guint padding) {
+    if (!bx || !bx->box || !widget) return;
+    gtk_box_pack_start(GTK_BOX(bx->box), widget, expand, fill, padding);
+    gtk_widget_show(widget);
+}
+
+
+void clear_box(box *bx) {
+    if (!bx || !bx->box) return;
+    GList *children = gtk_container_get_children(GTK_CONTAINER(bx->box));
+    for (GList *iter = children; iter != NULL; iter = iter->next) {
+        gtk_widget_destroy(GTK_WIDGET(iter->data));
+    }
+    g_list_free(children);
+}
+
+GtkWidget* get_box_widget(box *bx) {
+    return bx ? bx->box : NULL;
+}
+
+/* ---------- Container Addition Functions ---------- */
+
+void add_to_window(window *wn, GtkWidget *widget) {
+    if (wn && wn->win && widget) {
+        gtk_container_add(GTK_CONTAINER(wn->win), widget);
+    }
+}
+
+void add_to_header_bar_start(header_bar *hdb, GtkWidget *widget) {
+    if (hdb && hdb->header_bar && widget) {
+        gtk_header_bar_pack_start(GTK_HEADER_BAR(hdb->header_bar), widget);
+    }
+}
+
+void add_to_header_bar_end(header_bar *hdb, GtkWidget *widget) {
+    if (hdb && hdb->header_bar && widget) {
+        gtk_header_bar_pack_end(GTK_HEADER_BAR(hdb->header_bar), widget);
+    }
+}
+</file>
+
+<file path="structures.h">
+#ifndef STRUCTURES_H
+#define STRUCTURES_H
+
+#include<gtk/gtk.h>
+#include<string.h>
+#include<stdio.h>
+#include<stdlib.h>
+
+void ProgramStart();
+void ProgramEnd();
+void MainStart();
+
+// Global CSS provider for consistent styling
+extern GtkCssProvider *global_css_provider;
+
+// Helper function to apply CSS to a widget
+void apply_css(GtkWidget *widget, const char *css);
+
+// Helper function to update widget properties
+void refresh_widget(GtkWidget *widget);
+
+/*
+--------- Gestion des fenetres ---------
+*/
+typedef struct win {
+    GtkWidget *win;
+    char *title;
+    char *icon_path;
+    char *bg_image;
+    char *bg_color;
+    int width;
+    int height;
+    gboolean resizable;
+    gboolean modal;
+    double opacity;
+    gboolean fullscreen;
+    gboolean keep_below;
+    GtkWindowType type_win;
+    GtkWidget *drawing_area;
+    GtkCssProvider *css_provider;
+} window;
+
+window* create_window();
+void update_window(window *wn);
+void display_window(window *wn);
+void close_window(window *wn);
+
+/*
+--------- Gestion des header bars ---------
+*/
+typedef struct hdb{
+    GtkWidget *header_bar;
+    char *title;
+    char *sub_title;
+    char *title_style;
+    char *icon_path;
+    int width;
+    int height;
+    gboolean close_button_show;
+    char *decoration_layout;
+} header_bar;
+
+header_bar* create_header_bar();
+void update_header_bar(header_bar *hdb);
+void display_header_bar(header_bar *hdb);
+
+/*
+---------- Gestion Buttons ----------
+*/
+typedef struct btn
+{
+    GtkWidget *button;
+    char *label;
+    char *bg_image;
+    char *bg_color;
+    char *label_style;
+    int width;
+    int height;
+    void (*click_callback)(GtkWidget*, gpointer);
+    void *callback_data;
+} button;
+
+button* create_button();
+void update_button(button *btn);
+
+/*
+---------- Gestion Labels ----------
+*/
+typedef struct lb{
+    GtkWidget *label;
+    char *text;
+    char *color;
+    char *bg_color;
+    char *font_family;
+    char *style;
+    char *position;
+    int width;
+    int height;
+} label;
+
+label* create_label();
+void update_label(label *lb);
+
+/*
+---------- Gestion Progress Bars ----------
+*/
+typedef struct prog{
+    GtkWidget *progress;
+    double fraction;
+    char *text;
+    char *pulse_text;
+    int width;
+    int height;
+    gboolean inverted;
+    GtkOrientation orientation;
+    gboolean show_text;
+    gboolean is_pulsing;
+    guint pulse_interval;
+    guint pulse_timeout_id;
+} progress_bar;
+
+progress_bar* create_progress_bar();
+void update_progress_bar(progress_bar *pb);
+void start_progress_pulse(progress_bar *pb);
+void stop_progress_pulse(progress_bar *pb);
+void set_progress_value(progress_bar *pb, double value);
+
+/*
+---------- Gestion Spinner ----------
+*/
+typedef struct spin {
+    GtkWidget *container;
+    GtkWidget *spinner;
+    GtkWidget *label;
+    char *text;
+    int width;
+    int height;
+    gboolean active;
+    gboolean spinning;
+} spinner;
+
+spinner* create_spinner();
+void update_spinner(spinner *spin);
+void start_spinner(spinner *spin);
+void stop_spinner(spinner *spin);
+GtkWidget* get_spinner_widget(spinner *spin);
+
+/*
+---------- Gestion Image ----------
+*/
+typedef struct im{
+    GtkWidget *image;
+    char *file_name;
+    char *animation_file;
+    char *icon_name;
+    char *position;
+    char *border_color;
+    int width;
+    int height;
+    int border_width;
+    int border_radius;
+    int pixel_size;
+    void (*click_callback)(GtkWidget*, gpointer);
+    void *callback_data;
+} image;
+
+image* create_image();
+void update_image(image *im);
+
+/*
+---------- Gestion Entry ----------
+*/
+typedef struct entry {
+    GtkWidget *entry;
+    char *text;
+    char *placeholder_text;
+    char *bg_color;
+    char *color;
+    char *font_family;
+    char *label_style;
+    int width;
+    int height;
+    int border_width;
+    int margin_top, margin_bottom, margin_left, margin_right;
+    gboolean visibility;
+    gboolean editable;
+    gboolean has_frame;
+    void (*changed_callback)(GtkWidget*, gpointer);
+    void *callback_data;
+} entry;
+
+entry* create_entry();
+void update_entry(entry *en);
+char* get_entry_text(entry *en);
+void set_entry_text(entry *en, const char *text);
+
+/*
+---------- Gestion Radio Button ----------
+*/
+typedef struct radbtn {
+    GtkWidget *radio_button;
+    char *label;
+    char *group_id;
+    char *color;
+    char *bg_color;
+    int width;
+    int height;
+    char *position;
+    gboolean active;
+    gboolean mode;
+    void (*toggled_callback)(GtkWidget*, gpointer);
+    void *callback_data;
+} radio_button;
+
+radio_button* create_radio_button(const char *group_id, const char *label);
+void update_radio_button(radio_button *rdb);
+void set_radio_button_active(radio_button *rdb, gboolean active);
+gboolean is_radio_button_active(radio_button *rdb);
+
+/*
+---------- Gestion Check Button ----------
+*/
+typedef struct chb {
+    GtkWidget *checkbutton;
+    char *label;
+    char *color;
+    char *bg_color;
+    char *font_family;
+    char *label_style;
+    int width;
+    int height;
+    char *position;
+    gboolean active;
+    gboolean mode;
+    gboolean inconsistent;
+    gboolean draw_indicator;
+    void (*toggled_callback)(GtkWidget*, gpointer);
+    void *callback_data;
+} check_button;
+
+check_button* create_check_button();
+void update_check_button(check_button *chb);
+void set_check_button_active(check_button *chb, gboolean active);
+gboolean is_check_button_active(check_button *chb);
+
+
+/*
+---------- Gestion Box ----------
+*/
+typedef struct bx {
+    GtkWidget *box;
+    GtkOrientation orientation;
+    int spacing;
+    int width;
+    int height;
+    int border_width;
+    char *bg_color;
+    int margin_top, margin_bottom, margin_left, margin_right;
+    gboolean homogeneous;
+    gboolean expand;
+    gboolean fill;
+    guint padding;
+} box;
+
+box* create_box(GtkOrientation orientation, int spacing, gboolean homogeneous);
+box* create_hbox(int spacing, gboolean homogeneous);
+box* create_vbox(int spacing, gboolean homogeneous);
+void update_box(box *bx);
+void add_to_box(box *bx, GtkWidget *widget);
+void add_to_box_with_properties(box *bx, GtkWidget *widget, gboolean expand, gboolean fill, guint padding);
+void clear_box(box *bx);
+GtkWidget* get_box_widget(box *bx);
+
+
+/*
+---------- Gestion Menu and Submenu ----------
+*/
+typedef struct menu {
+    GtkWidget *menu_widget;
+    GtkOrientation orientation;
+    char *bg_color;
+    char *text_color;
+    int item_spacing;
+} menu;
+
+typedef struct menu_button {
+    GtkWidget *button;
+    char *label;
+    char *icon_name;
+    menu *main_menu;
+    int width;
+    int height;
+    char *bg_color;
+    char *text_color;
+    char *position;
+} menu_button;
+
+// Menu creation functions
+menu* create_horizontal_menu();
+menu* create_vertical_menu();
+menu* create_submenu();
+
+// Menu item functions
+void add_menu_item(menu *m, const char *label, void (*callback)(GtkWidget*, gpointer), void *data);
+void add_menu_item_with_icon(menu *m, const char *label, const char *icon_name, 
+                              void (*callback)(GtkWidget*, gpointer), void *data);
+void add_check_menu_item(menu *m, const char *label, gboolean active,
+                          void (*callback)(GtkWidget*, gpointer), void *data);
+void add_radio_menu_item(menu *m, const char *label, gboolean active,
+                          void (*callback)(GtkWidget*, gpointer), void *data);
+void add_menu_separator(menu *m);
+void add_submenu(menu *parent, const char *label, menu *submenu);
+void add_submenu_with_icon(menu *parent, const char *label, const char *icon_name, menu *submenu);
+
+// Menu button functions
+menu_button* create_menu_button(const char *label);
+menu_button* create_menu_button_with_icon(const char *icon_name);
+void set_menu_button_menu(menu_button *mb, menu *m);
+void update_menu_button(menu_button *mb);
+void add_menu_button_to_box(box *bx, menu_button *mb);
+
+// Helper functions
+void free_menu(menu *m);
+void free_menu_button(menu_button *mb);
+
+
+/*
+--------- Container Addition Functions ---------
+*/
+void add_to_window(window *wn, GtkWidget *widget);
+void add_to_header_bar_start(header_bar *hdb, GtkWidget *widget);
+void add_to_header_bar_end(header_bar *hdb, GtkWidget *widget);
+
+// Convenience macros
+#define ADD_TO_WINDOW(win, widget) add_to_window(win, (widget))
+#define ADD_TO_HEADER_START(hdb, widget) add_to_header_bar_start(hdb, (widget))
+#define ADD_TO_HEADER_END(hdb, widget) add_to_header_bar_end(hdb, (widget))
+
+#endif
+</file>
+
+<file path="test.c">
+#include "structures.h"
+
+void on_color_toggled(GtkWidget *widget, gpointer data) {
+    radio_button *rdb = (radio_button*)data;
+    if (is_radio_button_active(rdb)) {
+        g_print("Selected color: %s\n", rdb->label);
+    }
+}
+
+void on_size_toggled(GtkWidget *widget, gpointer data) {
+    radio_button *rdb = (radio_button*)data;
+    if (is_radio_button_active(rdb)) {
+        g_print("Selected size: %s\n", rdb->label);
+    }
+}
+
+int main(int argc, char *argv[]) {
+    ProgramStart();
+    
+    // Create window
+    window *win = create_window();
+    win->title = "Radio Button Groups";
+    win->width = 350;
+    win->height = 300;
+    win->resizable = TRUE;
+    
+    // Create header bar
+    header_bar *hdb = create_header_bar();
+    hdb->title = "Radio Button Demo";
+    hdb->close_button_show = TRUE;
+    update_header_bar(hdb);
+    
+    // Create main box
+    box *main_box = create_vbox(10, FALSE);
+    main_box->margin_top = 20;
+    main_box->margin_bottom = 20;
+    main_box->margin_left = 20;
+    main_box->margin_right = 20;
+    
+    // ===== GROUP 1: Colors =====
+    label *color_title = create_label();
+    color_title->text = "Choose a color:";
+    color_title->style = "bold";
+    update_label(color_title);
+    add_to_box(main_box, color_title->label);
+    
+    // Create radio buttons for colors (group "colors")
+    radio_button *red = create_radio_button("colors", "Red");
+    red->toggled_callback = on_color_toggled;
+    red->callback_data = red;
+    update_radio_button(red);
+    add_to_box(main_box, red->radio_button);
+    
+    radio_button *green = create_radio_button("colors", "Green");
+    green->toggled_callback = on_color_toggled;
+    green->callback_data = green;
+    update_radio_button(green);
+    add_to_box(main_box, green->radio_button);
+    
+    radio_button *blue = create_radio_button("colors", "Blue");
+    blue->toggled_callback = on_color_toggled;
+    blue->callback_data = blue;
+    update_radio_button(blue);
+    add_to_box(main_box, blue->radio_button);
+    
+    // Set default selection
+    set_radio_button_active(red, TRUE);
+    
+    // Add separator
+    GtkWidget *sep = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+    add_to_box(main_box, sep);
+    
+    // ===== GROUP 2: Sizes =====
+    label *size_title = create_label();
+    size_title->text = "Choose a size:";
+    size_title->style = "bold";
+    update_label(size_title);
+    add_to_box(main_box, size_title->label);
+    
+    // Create radio buttons for sizes (group "sizes")
+    radio_button *small = create_radio_button("sizes", "Small");
+    small->toggled_callback = on_size_toggled;
+    small->callback_data = small;
+    update_radio_button(small);
+    add_to_box(main_box, small->radio_button);
+    
+    radio_button *medium = create_radio_button("sizes", "Medium");
+    medium->toggled_callback = on_size_toggled;
+    medium->callback_data = medium;
+    update_radio_button(medium);
+    add_to_box(main_box, medium->radio_button);
+    
+    radio_button *large = create_radio_button("sizes", "Large");
+    large->toggled_callback = on_size_toggled;
+    large->callback_data = large;
+    update_radio_button(large);
+    add_to_box(main_box, large->radio_button);
+    
+    // Set default selection
+    set_radio_button_active(medium, TRUE);
+    
+    // Display everything
+    update_box(main_box);
+    update_window(win);
+    
+    ADD_TO_WINDOW(win, get_box_widget(main_box));
+    ADD_TO_WINDOW(win, hdb->header_bar);
+    
+    display_window(win);
+    
+    MainStart();
+    ProgramEnd();
+    
+    return 0;
+}
+</file>
+
+<file path="test2.c">
+#include "structures.h"
+
+// Menu callbacks
+void on_new_file(GtkWidget *widget, gpointer data) {
+    g_print("File -> New\n");
+}
+
+void on_open_file(GtkWidget *widget, gpointer data) {
+    g_print("File -> Open: %s\n", (char*)data);
+}
+
+void on_save_file(GtkWidget *widget, gpointer data) {
+    g_print("File -> Save\n");
+}
+
+void on_save_as(GtkWidget *widget, gpointer data) {
+    g_print("File -> Save As\n");
+}
+
+void on_quit(GtkWidget *widget, gpointer data) {
+    g_print("Quitting...\n");
+    ProgramEnd();
+}
+
+void on_undo(GtkWidget *widget, gpointer data) {
+    g_print("Edit -> Undo\n");
+}
+
+void on_redo(GtkWidget *widget, gpointer data) {
+    g_print("Edit -> Redo\n");
+}
+
+void on_cut(GtkWidget *widget, gpointer data) {
+    g_print("Edit -> Cut\n");
+}
+
+void on_copy(GtkWidget *widget, gpointer data) {
+    g_print("Edit -> Copy\n");
+}
+
+void on_paste(GtkWidget *widget, gpointer data) {
+    g_print("Edit -> Paste\n");
+}
+
+void on_zoom_in(GtkWidget *widget, gpointer data) {
+    g_print("View -> Zoom In\n");
+}
+
+void on_zoom_out(GtkWidget *widget, gpointer data) {
+    g_print("View -> Zoom Out\n");
+}
+
+void on_fullscreen_toggled(GtkWidget *widget, gpointer data) {
+    gboolean active = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));
+    g_print("Fullscreen: %s\n", active ? "ON" : "OFF");
+}
+
+void on_show_statusbar_toggled(GtkWidget *widget, gpointer data) {
+    gboolean active = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));
+    g_print("Show Statusbar: %s\n", active ? "ON" : "OFF");
+}
+
+void on_view_mode_changed(GtkWidget *widget, gpointer data) {
+    if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget))) {
+        g_print("View Mode: %s\n", (char*)data);
+    }
+}
+
+void on_about(GtkWidget *widget, gpointer data) {
+    g_print("Help -> About\n");
+}
+
+void on_documentation(GtkWidget *widget, gpointer data) {
+    g_print("Help -> Documentation\n");
+}
+
+// Callbacks for project1.gtk submenu items
+void on_open_readonly(GtkWidget *widget, gpointer data) {
+    g_print("Opening project1.gtk in read-only mode\n");
+}
+
+void on_open_with_backup(GtkWidget *widget, gpointer data) {
+    g_print("Opening project1.gtk with backup\n");
+}
+
+void on_project_properties(GtkWidget *widget, gpointer data) {
+    g_print("Showing properties for project1.gtk\n");
+}
+
+void on_export_project(GtkWidget *widget, gpointer data) {
+    g_print("Exporting project1.gtk\n");
+}
+
+void on_duplicate_project(GtkWidget *widget, gpointer data) {
+    g_print("Duplicating project1.gtk\n");
+}
+
+void on_delete_project(GtkWidget *widget, gpointer data) {
+    g_print("Deleting project1.gtk\n");
+}
+
+// Button callbacks
+void on_button_click(GtkWidget *widget, gpointer data) {
+    g_print("Button clicked!\n");
+}
+
+void on_check_toggled(GtkWidget *widget, gpointer data) {
+    check_button *chb = (check_button*)data;
+    g_print("Check button is now: %s\n", is_check_button_active(chb) ? "Checked" : "Unchecked");
+}
+
+void on_radio_toggled(GtkWidget *widget, gpointer data) {
+    radio_button *rdb = (radio_button*)data;
+    if (is_radio_button_active(rdb)) {
+        g_print("Selected: %s\n", rdb->label);
+    }
+}
+
+void on_entry_changed(GtkWidget *widget, gpointer data) {
+    entry *en = (entry*)data;
+    g_print("Entry text: %s\n", get_entry_text(en));
+}
+
+int main(int argc, char *argv[]) {
+    ProgramStart();
+    
+    // Create main window
+    window *win = create_window();
+    win->title = "Complete GTK Application";
+    win->width = 900;
+    win->height = 700;
+    win->resizable = TRUE;
+    win->bg_color = "#f5f5f5";
+    update_window(win);
+    
+    // Create header bar
+    header_bar *hdb = create_header_bar();
+    hdb->title = "My Application";
+    hdb->title_style = "bold";
+    hdb->close_button_show = TRUE;
+    update_header_bar(hdb);
+    
+    // Create main vertical box
+    box *main_vbox = create_vbox(0, FALSE);
+    
+    // ===== HORIZONTAL MENU BAR =====
+    menu *menubar = create_horizontal_menu();
+    
+    // ----- File Menu -----
+    menu *file2_menu = create_submenu();
+    add_menu_item_with_icon(file2_menu, "New", "document-new", on_new_file, NULL);
+    add_menu_item_with_icon(file2_menu, "Open", "document-open", on_open_file, "example.txt");
+    add_menu_item_with_icon(file2_menu, "Save", "document-save", on_save_file, NULL);
+    add_menu_item_with_icon(file2_menu, "Save As", "document-save-as", on_save_as, NULL);
+    add_menu_separator(file2_menu);
+    add_submenu(menubar, "TESTEUR", file2_menu);
+
+
+    menu *file_menu = create_submenu();
+    add_menu_item_with_icon(file_menu, "New", "document-new", on_new_file, NULL);
+    add_menu_item_with_icon(file_menu, "Open", "document-open", on_open_file, "example.txt");
+    add_menu_item_with_icon(file_menu, "Save", "document-save", on_save_file, NULL);
+    add_menu_item_with_icon(file_menu, "Save As", "document-save-as", on_save_as, NULL);
+    add_menu_separator(file_menu);
+    
+    // Recent Files submenu with project1.gtk having its own submenu
+    menu *recent_menu = create_submenu();
+    
+    // Create submenu for project1.gtk
+    menu *project1_submenu = create_submenu();
+    add_menu_item_with_icon(project1_submenu, "Open Read-Only", "object-locked", on_open_readonly, NULL);
+    add_menu_item_with_icon(project1_submenu, "Open with Backup", "document-save", on_open_with_backup, NULL);
+    add_menu_separator(project1_submenu);
+    add_menu_item_with_icon(project1_submenu, "Properties", "document-properties", on_project_properties, NULL);
+    add_menu_item_with_icon(project1_submenu, "Export", "document-export", on_export_project, NULL);
+    add_menu_item_with_icon(project1_submenu, "Duplicate", "edit-copy", on_duplicate_project, NULL);
+    add_menu_separator(project1_submenu);
+    add_menu_item_with_icon(project1_submenu, "Delete", "edit-delete", on_delete_project, NULL);
+    
+    // Add project1.gtk with its submenu
+    add_submenu_with_icon(recent_menu, "project1.gtk", "application-x-gtk", project1_submenu);
+    
+    // Add other recent files as simple items
+    add_menu_item_with_icon(recent_menu, "project2.gtk", "application-x-gtk", on_open_file, "project2.gtk");
+    add_menu_item_with_icon(recent_menu, "project3.gtk", "application-x-gtk", on_open_file, "project3.gtk");
+    add_menu_separator(recent_menu);
+    add_menu_item(recent_menu, "Clear Recent Files", on_open_file, "Clear");
+    
+    add_submenu_with_icon(file_menu, "Recent Files", "document-open-recent", recent_menu);
+    
+    add_menu_separator(file_menu);
+    add_menu_item_with_icon(file_menu, "Quit", "application-exit", on_quit, NULL);
+    add_submenu(menubar, "File", file_menu);
+    
+    // ----- Edit Menu -----
+    menu *edit_menu = create_submenu();
+    add_menu_item_with_icon(edit_menu, "Undo", "edit-undo", on_undo, NULL);
+    add_menu_item_with_icon(edit_menu, "Redo", "edit-redo", on_redo, NULL);
+    add_menu_separator(edit_menu);
+    add_menu_item_with_icon(edit_menu, "Cut", "edit-cut", on_cut, NULL);
+    add_menu_item_with_icon(edit_menu, "Copy", "edit-copy", on_copy, NULL);
+    add_menu_item_with_icon(edit_menu, "Paste", "edit-paste", on_paste, NULL);
+    add_submenu(menubar, "Edit", edit_menu);
+    
+    // ----- View Menu with Check Items -----
+    menu *view_menu = create_submenu();
+    add_menu_item_with_icon(view_menu, "Zoom In", "zoom-in", on_zoom_in, NULL);
+    add_menu_item_with_icon(view_menu, "Zoom Out", "zoom-out", on_zoom_out, NULL);
+    add_menu_separator(view_menu);
+    add_check_menu_item(view_menu, "Fullscreen", FALSE, on_fullscreen_toggled, NULL);
+    add_check_menu_item(view_menu, "Show Statusbar", TRUE, on_show_statusbar_toggled, NULL);
+    add_menu_separator(view_menu);
+    
+    // Radio items for view mode
+    add_radio_menu_item(view_menu, "Normal View", TRUE, on_view_mode_changed, "Normal");
+    add_radio_menu_item(view_menu, "Compact View", FALSE, on_view_mode_changed, "Compact");
+    add_radio_menu_item(view_menu, "List View", FALSE, on_view_mode_changed, "List");
+    add_submenu(menubar, "View", view_menu);
+    
+    // ----- Help Menu -----
+    menu *help_menu = create_submenu();
+    add_menu_item_with_icon(help_menu, "Documentation", "help-contents", on_documentation, NULL);
+    add_menu_separator(help_menu);
+    add_menu_item_with_icon(help_menu, "About", "help-about", on_about, NULL);
+    add_submenu(menubar, "Help", help_menu);
+    
+    // Add menubar to box
+    box *menu_box = create_hbox(0, FALSE);
+    add_to_box(menu_box, menubar->menu_widget);
+    
+    // ===== TOOLBAR WITH MENU BUTTONS =====
+    box *toolbar = create_hbox(5, FALSE);
+    toolbar->margin_top = 5;
+    toolbar->margin_bottom = 5;
+    toolbar->margin_left = 10;
+    toolbar->margin_right = 10;
+    toolbar->bg_color = "#e0e0e0";
+    update_box(toolbar);
+    
+    // File menu button
+    menu_button *file_btn = create_menu_button_with_icon("document-open");
+    file_btn->label = "File";
+    set_menu_button_menu(file_btn, file_menu);
+    file_btn->bg_color = "#d0d0d0";
+    update_menu_button(file_btn);
+    add_menu_button_to_box(toolbar, file_btn);
+    
+    // Edit menu button
+    menu_button *edit_btn = create_menu_button_with_icon("edit");
+    edit_btn->label = "Edit";
+    set_menu_button_menu(edit_btn, edit_menu);
+    edit_btn->bg_color = "#d0d0d0";
+    update_menu_button(edit_btn);
+    add_menu_button_to_box(toolbar, edit_btn);
+    
+    // View menu button
+    menu_button *view_btn = create_menu_button("View");
+    set_menu_button_menu(view_btn, view_menu);
+    view_btn->bg_color = "#d0d0d0";
+    update_menu_button(view_btn);
+    add_menu_button_to_box(toolbar, view_btn);
+    
+    // Separator
+    GtkWidget *sep = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
+    add_to_box(toolbar, sep);
+    
+    // Regular button
+    button *action_btn = create_button();
+    action_btn->label = "Action";
+    action_btn->bg_color = "#4CAF50";
+    action_btn->label_style = "bold";
+    action_btn->width = 100;
+    action_btn->height = 30;
+    action_btn->click_callback = on_button_click;
+    update_button(action_btn);
+    add_to_box(toolbar, action_btn->button);
+    
+    // ===== CONTENT AREA =====
+    box *content_box = create_vbox(15, FALSE);
+    content_box->margin_top = 20;
+    content_box->margin_bottom = 20;
+    content_box->margin_left = 20;
+    content_box->margin_right = 20;
+    update_box(content_box);
+    
+    // Title label
+    label *title_label = create_label();
+    title_label->text = "Welcome to the Complete GTK Application";
+    title_label->style = "bold";
+    title_label->color = "#2c3e50";
+    title_label->font_family = "Arial";
+    title_label->width = 500;
+    update_label(title_label);
+    add_to_box(content_box, title_label->label);
+    
+    // Description
+    label *desc_label = create_label();
+    desc_label->text = "This demo showcases all the available widgets and features:\n\n"
+                       "• Horizontal Menu Bar with nested submenus\n"
+                       "• project1.gtk has its own submenu with multiple options\n"
+                       "• Menu Buttons in toolbar\n"
+                       "• Radio buttons, Check buttons, Entry fields\n"
+                       "• Progress bar and Spinner\n"
+                       "• Customizable styling with CSS\n\n"
+                       "Try clicking File -> Recent Files -> project1.gtk to see the nested submenu!";
+    desc_label->color = "#34495e";
+    desc_label->position = "center";
+    update_label(desc_label);
+    add_to_box(content_box, desc_label->label);
+    
+    // Entry field
+    label *entry_label = create_label();
+    entry_label->text = "Enter your name:";
+    entry_label->style = "bold";
+    update_label(entry_label);
+    add_to_box(content_box, entry_label->label);
+    
+    entry *name_entry = create_entry();
+    name_entry->placeholder_text = "Type here...";
+    name_entry->width = 300;
+    name_entry->height = 35;
+    name_entry->visibility = FALSE;
+    name_entry->bg_color = "#ffffff";
+    name_entry->color = "#000000";
+    name_entry->changed_callback = on_entry_changed;
+    name_entry->callback_data = name_entry;
+    update_entry(name_entry);
+    add_to_box(content_box, name_entry->entry);
+    
+    // Radio buttons group
+    label *radio_label = create_label();
+    radio_label->text = "Choose an option:";
+    radio_label->style = "bold";
+    update_label(radio_label);
+    add_to_box(content_box, radio_label->label);
+    
+    box *radio_box = create_hbox(10, FALSE);
+    radio_box->margin_left = 20;
+    update_box(radio_box);
+    
+    radio_button *option1 = create_radio_button("options", "Option 1");
+    option1->toggled_callback = on_radio_toggled;
+    option1->callback_data = option1;
+    update_radio_button(option1);
+    add_to_box(radio_box, option1->radio_button);
+    
+    radio_button *option2 = create_radio_button("options", "Option 2");
+    option2->toggled_callback = on_radio_toggled;
+    option2->callback_data = option2;
+    update_radio_button(option2);
+    add_to_box(radio_box, option2->radio_button);
+    
+    radio_button *option3 = create_radio_button("options", "Option 3");
+    option3->toggled_callback = on_radio_toggled;
+    option3->callback_data = option3;
+    update_radio_button(option3);
+    add_to_box(radio_box, option3->radio_button);
+    
+    set_radio_button_active(option1, TRUE);
+    add_to_box(content_box, radio_box->box);
+    
+    // Check button
+    check_button *feature_chb = create_check_button();
+    feature_chb->label = "Enable Advanced Features";
+    feature_chb->toggled_callback = on_check_toggled;
+    feature_chb->callback_data = feature_chb;
+    update_check_button(feature_chb);
+    add_to_box(content_box, feature_chb->checkbutton);
+    
+    // Progress bar
+    label *progress_label = create_label();
+    progress_label->text = "Loading Progress:";
+    progress_label->style = "bold";
+    update_label(progress_label);
+    add_to_box(content_box, progress_label->label);
+    
+    progress_bar *pb = create_progress_bar();
+    pb->width = 400;
+    pb->height = 25;
+    pb->show_text = TRUE;
+    update_progress_bar(pb);
+    add_to_box(content_box, pb->progress);
+    
+    // Spinner
+    spinner *spin = create_spinner();
+    spin->text = "Processing...";
+    update_spinner(spin);
+    add_to_box(content_box, get_spinner_widget(spin));
+    
+    // Animate progress bar
+    start_progress_pulse(pb);
+    start_spinner(spin);
+    
+    // Simulate progress update after 3 seconds
+    g_timeout_add(3000, (GSourceFunc)set_progress_value, pb);
+    g_timeout_add(5000, (GSourceFunc)stop_progress_pulse, pb);
+    g_timeout_add(5000, (GSourceFunc)stop_spinner, spin);
+    
+    // Add everything to main box
+    add_to_box(main_vbox, menu_box->box);
+    add_to_box(main_vbox, toolbar->box);
+    add_to_box(main_vbox, content_box->box);
+    
+    // Add to window
+    update_box(main_vbox);
+    ADD_TO_WINDOW(win, get_box_widget(main_vbox));
+    ADD_TO_WINDOW(win, hdb->header_bar);
+    
+    // Connect close handler
+    close_window(win);
+    
+    // Display
+    display_window(win);
+    display_header_bar(hdb);
+    
+    MainStart();
+    ProgramEnd();
+    
+    return 0;
+}
+</file>
+
+<file path="window.c">
+#include "structures.h"
+
+
+void openWindow(GtkWidget *widget, gpointer data) {
+    
+    window *Win = create_window();
+    Win->icon_path="image.jpg";
+    Win->height=200;
+    Win->width=100;
+    update_window(Win);
+    box
+    display_window(Win);
+}
+
+int main(){
+    ProgramStart();
+
+    window *Fenetre = create_window();
+    Fenetre->icon_path="image.jpg";
+    Fenetre->title = "Presentation";
+    //Fenetre->bg_color="grey";
+    Fenetre->height=600;
+    Fenetre->width=500;
+    update_window(Fenetre);
+    
+
+   
+    box* MAIN_box = create_vbox(120,FALSE);
+    add_to_window(Fenetre, MAIN_box->box);
+
+
+    menu* main_menu = create_horizontal_menu();
+
+    menu *file_menu = create_submenu();
+    add_menu_item_with_icon(file_menu, "New", "document-new", NULL, NULL);
+    add_menu_item_with_icon(file_menu, "Open", "document-open", NULL, NULL);
+    add_menu_item_with_icon(file_menu, "Save", "document-save", NULL, NULL);
+    add_menu_item_with_icon(file_menu, "Save As", "document-save-as", NULL, NULL);
+    add_submenu(main_menu, "File", file_menu);
+
+    
+    menu *file_menu2 = create_submenu();
+    add_menu_item_with_icon(file_menu2, "New", "document-new", NULL, NULL);
+    add_menu_item_with_icon(file_menu2, "Open", "document-open", NULL, NULL);
+    add_menu_item_with_icon(file_menu2, "Save", "document-save", NULL, NULL);
+    add_menu_item_with_icon(file_menu2, "Save As", "document-save-as", NULL, NULL);
+
+    add_submenu(main_menu, "EDIt", file_menu2);
+
+    //add_to_box(MAIN_box,main_menu->menu_widget);
+    add_to_box_with_properties(MAIN_box, main_menu->menu_widget , FALSE, FALSE, 0);
+    
+
+    box* SecondBoxH = create_hbox(0,FALSE);
+    add_to_box(MAIN_box, SecondBoxH->box);
+
+    //RADIO
+    box* RadioBoxV = create_vbox(0,FALSE);
+    add_to_box(SecondBoxH,RadioBoxV->box);
+    label* TitreG1 = create_label();
+    TitreG1->text = "Qualites des ordinateurs";
+    update_label(TitreG1);
+    add_to_box(RadioBoxV,TitreG1->label);
+
+    box* hRBox = create_hbox(0,FALSE);
+    add_to_box(RadioBoxV,hRBox->box);
+    radio_button* TBonne = create_radio_button("PremierG","Tres Bonnne");
+    TBonne->active = TRUE;
+    update_radio_button(TBonne);
+
+    radio_button* Moyenne = create_radio_button("PremierG","Moyenne");
+
+
+    radio_button* Faible = create_radio_button("PremierG","Faible");
+
+    add_to_box(hRBox,TBonne->radio_button);
+    add_to_box(hRBox,Moyenne->radio_button);
+    add_to_box(hRBox,Faible->radio_button);
+
+    
+    button* OK = create_button();
+    OK->click_callback = openWindow;
+    //OK->callback_data = Fenetre;
+    update_button(OK);
+    add_to_box(MAIN_box,OK->button);
+
+
+    
+    display_window(Fenetre);
+
+    MainStart();
+    return 0;
+}
+</file>
+
+</files>
